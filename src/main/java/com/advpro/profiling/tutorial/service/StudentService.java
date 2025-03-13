@@ -7,9 +7,7 @@ import com.advpro.profiling.tutorial.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author muhammad.khadafi
@@ -24,19 +22,21 @@ public class StudentService {
     private StudentCourseRepository studentCourseRepository;
 
     public List<StudentCourse> getAllStudentsWithCourses() {
-        List<Student> students = studentRepository.findAll();
-        List<StudentCourse> studentCourses = new ArrayList<>();
-        for (Student student : students) {
-            List<StudentCourse> studentCoursesByStudent = studentCourseRepository.findByStudentId(student.getId());
-            for (StudentCourse studentCourseByStudent : studentCoursesByStudent) {
-                StudentCourse studentCourse = new StudentCourse();
-                studentCourse.setStudent(student);
-                studentCourse.setCourse(studentCourseByStudent.getCourse());
-                studentCourses.add(studentCourse);
-            }
-        }
+        // Ambil semua StudentCourse dengan Student dan Course dalam satu query
+        List<StudentCourse> studentCourses = studentCourseRepository.findAllWithStudentsAndCourses();
+
+        // Optimasi dengan Map untuk menghindari object reference duplikasi
+        Map<Long, Student> studentMap = new HashMap<>();
+        studentCourses.forEach(sc ->
+                studentMap.putIfAbsent(sc.getStudent().getId(), sc.getStudent())
+        );
+
+        // Pastikan setiap StudentCourse memiliki referensi Student yang sama di memory
+        studentCourses.forEach(sc -> sc.setStudent(studentMap.get(sc.getStudent().getId())));
+
         return studentCourses;
     }
+
 
     public Optional<Student> findStudentWithHighestGpa() {
         List<Student> students = studentRepository.findAll();
