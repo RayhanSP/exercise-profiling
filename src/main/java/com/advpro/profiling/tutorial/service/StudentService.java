@@ -38,8 +38,8 @@ public class StudentService {
     }
 
 
-    public List<Student> findStudentsWithHighestGpa() {
-        return studentRepository.findStudentsWithHighestGpa();
+    public Optional<Student> findStudentWithHighestGpa() {
+        return studentRepository.findStudentWithHighestGpa();
     }
 
 

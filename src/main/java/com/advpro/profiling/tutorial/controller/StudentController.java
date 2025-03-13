@@ -28,11 +28,10 @@ public class StudentController {
         return ResponseEntity.ok(studentCourses.toString());
     }
     @GetMapping("/highest-gpa")
-    public ResponseEntity<List<Student>> highestGpa() {
-        List<Student> studentsWithHighestGpa = studentService.findStudentsWithHighestGpa();
-        return studentsWithHighestGpa.isEmpty()
-                ? ResponseEntity.notFound().build()
-                : ResponseEntity.ok(studentsWithHighestGpa);
+    public ResponseEntity<String> highestGpa() {
+        Optional<Student> studentWithHighestGpa = studentService.findStudentWithHighestGpa();
+        return studentWithHighestGpa.map(student -> ResponseEntity.ok(student.toString()))
+                .orElse(ResponseEntity.notFound().build());
     }
     @GetMapping("/all-student-name")
     public ResponseEntity<String> allStudentName() {

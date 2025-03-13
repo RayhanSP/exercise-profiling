@@ -17,6 +17,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("SELECT s.name FROM Student s")
     List<String> findAllStudentNames();
 
-    @Query("SELECT s FROM Student s WHERE s.gpa = (SELECT MAX(s2.gpa) FROM Student s2)")
-    List<Student> findStudentsWithHighestGpa();
+    @Query("SELECT s FROM Student s WHERE s.gpa = (SELECT MAX(s2.gpa) FROM Student s2) ORDER BY s.id ASC LIMIT 1")
+    Optional<Student> findStudentWithHighestGpa();
 }
